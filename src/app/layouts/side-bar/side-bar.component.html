@@ -1,13 +1,7 @@
-<!-- Sidebar (Tailwind only) -->
-<!-- Put your logo here: src/assets/logoITI.png then use src="assets/logoITI.png" -->
-<aside class="h-screen w-72 bg-white border-r border-slate-200">
+<aside class="sticky top-0 h-screen w-72 bg-white border-r border-slate-200 flex flex-col">
   <!-- Top / Brand -->
   <div class="flex items-center gap-3 px-6 py-5 border-b border-slate-200">
-    <img
-      src="/logoITI.png"
-      alt="ITI Logo"
-      class="h-20 w-20 object-contain"
-    />
+    <img src="/logoITI.png" alt="ITI Logo" class="h-20 w-20 object-contain" />
     <div class="leading-tight">
       <div class="text-lg font-bold text-slate-900">ITI</div>
       <div class="text-xs text-slate-500">Online Examination System</div>
@@ -15,28 +9,46 @@
   </div>
 
   <!-- Nav -->
-  <nav class="px-3 py-4">
-    <a
-      href="#"
-      class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-white bg-[#0b2b5b]"
-    >
-      <!-- dashboard icon -->
-      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-        <path d="M4 13h7V4H4v9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M13 20h7V11h-7v9Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M13 9h7V4h-7v5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-        <path d="M4 20h7v-5H4v5Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
-      </svg>
-      Dashboard
-    </a>
+  <nav class="px-3 py-4 flex-1 overflow-auto">
+    <!-- ✅ Student menu -->
+    <div *ngIf="isStudent()" class="mt-2 space-y-1">
 
-    <div class="mt-2 space-y-1">
       <a
-        href="#"
-        class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100"
+        routerLink="/app/studentHome"
+        routerLinkActive="bg-[#0b2b5b] text-white shadow-sm"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold
+               text-slate-700 transition
+               hover:bg-slate-100 hover:text-slate-900"
       >
-        <!-- exam icon -->
-        <svg class="h-5 w-5 text-slate-500" viewBox="0 0 24 24" fill="none">
+
+         <svg
+          class="h-5 w-5 text-slate-500 transition
+                 group-hover:text-slate-700
+                 group-[.bg-\[\#0b2b5b\]]:text-white"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <path
+            d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-10.5Z"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
+        </svg>
+        Student Home
+      </a>
+
+      <a
+
+        class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold
+               text-slate-700 transition
+               hover:bg-slate-100 hover:text-slate-900"
+      >
+        <svg class="h-5 w-5 text-slate-500 transition
+                    group-hover:text-slate-700
+                    group-[.bg-\[\#0b2b5b\]]:text-white"
+             viewBox="0 0 24 24" fill="none">
           <path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2"/>
           <path d="M8 8h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -46,83 +58,137 @@
       </a>
 
       <a
-        href="#"
-        class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100"
-      >
-        <!-- users icon -->
-        <svg class="h-5 w-5 text-slate-500" viewBox="0 0 24 24" fill="none">
-          <path d="M16 21a6 6 0 0 0-12 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" stroke-width="2"/>
-          <path d="M22 21a5 5 0 0 0-8-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M17 11a3 3 0 1 0 0-6" stroke="currentColor" stroke-width="2"/>
-        </svg>
-        Students
-      </a>
 
-      <a
-        href="#"
-        class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100"
+        class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold
+               text-slate-700 transition
+               hover:bg-slate-100 hover:text-slate-900"
       >
-        <!-- settings icon -->
-        <svg class="h-5 w-5 text-slate-500" viewBox="0 0 24 24" fill="none">
-          <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="currentColor" stroke-width="2"/>
-          <path d="M19.4 15a7.9 7.9 0 0 0 .1-2l2-1.2-2-3.5-2.3.6a7.8 7.8 0 0 0-1.7-1l-.3-2.4H10l-.3 2.4a7.8 7.8 0 0 0-1.7 1l-2.3-.6-2 3.5 2 1.2a7.9 7.9 0 0 0 .1 2l-2 1.2 2 3.5 2.3-.6c.5.4 1.1.7 1.7 1l.3 2.4h4.1l.3-2.4c.6-.3 1.2-.6 1.7-1l2.3.6 2-3.5-2-1.2Z"
-                stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <svg class="h-5 w-5 text-slate-500 transition
+                    group-hover:text-slate-700
+                    group-[.bg-\[\#0b2b5b\]]:text-white"
+             viewBox="0 0 24 24" fill="none">
+          <path d="M4 4h16v16H4V4Z" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 16V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M12 16V7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M16 16v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
-        Settings
+        Results
       </a>
     </div>
 
-    <!-- Section title -->
+    <!-- ✅ Instructor menu -->
+    <div *ngIf="isInstructor()" class="mt-2 space-y-1">
+
+      <a
+        routerLink="/app/instructorHome"
+        routerLinkActive="bg-[#0b2b5b] text-white shadow-sm"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold
+               text-slate-700 transition
+               hover:bg-slate-100 hover:text-slate-900"
+      >
+         <svg
+          class="h-5 w-5 text-slate-500 transition
+                 group-hover:text-slate-700
+                 group-[.bg-\[\#0b2b5b\]]:text-white"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <path
+            d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-10.5Z"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linejoin="round"
+          />
+        </svg>
+        Instructor Home
+      </a>
+
+      <a
+
+        class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold
+               text-slate-700 transition
+               hover:bg-slate-100 hover:text-slate-900"
+      >
+        <svg class="h-5 w-5 text-slate-500 transition
+                    group-hover:text-slate-700
+                    group-[.bg-\[\#0b2b5b\]]:text-white"
+             viewBox="0 0 24 24" fill="none">
+          <path d="M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 8h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M8 16h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Manage Exams
+      </a>
+
+      <a
+
+        class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold
+               text-slate-700 transition
+               hover:bg-slate-100 hover:text-slate-900"
+      >
+        <svg class="h-5 w-5 text-slate-500 transition
+                    group-hover:text-slate-700
+                    group-[.bg-\[\#0b2b5b\]]:text-white"
+             viewBox="0 0 24 24" fill="none">
+          <path d="M4 6h16v12H4V6Z" stroke="currentColor" stroke-width="2"/>
+          <path d="M7 9h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M7 12h7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M7 15h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Question Bank
+      </a>
+    </div>
+
+    <!-- Tools -->
     <div class="mt-6 px-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
       Tools
     </div>
 
     <div class="mt-2 space-y-1">
       <a
-        href="#"
-        class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100"
+
+        class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold
+               text-slate-700 transition
+               hover:bg-slate-100 hover:text-slate-900"
       >
-        <!-- reports icon -->
-        <svg class="h-5 w-5 text-slate-500" viewBox="0 0 24 24" fill="none">
-          <path d="M4 4h16v16H4V4Z" stroke="currentColor" stroke-width="2"/>
-          <path d="M8 16V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M12 16V7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M16 16v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
         Reports
       </a>
 
       <a
-        href="#"
-        class="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-100"
+
+        class="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold
+               text-slate-700 transition
+               hover:bg-slate-100 hover:text-slate-900"
       >
-        <!-- help icon -->
-        <svg class="h-5 w-5 text-slate-500" viewBox="0 0 24 24" fill="none">
-          <path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" stroke="currentColor" stroke-width="2"/>
-          <path d="M9.5 9a2.5 2.5 0 1 1 4.1 1.9c-.8.6-1.6 1.1-1.6 2.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M12 17h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
         Help Center
       </a>
     </div>
   </nav>
 
   <!-- Bottom / Profile -->
-  <div class="mt-auto border-t border-slate-200 p-4">
+  <div class="border-t border-slate-200 p-4">
     <div class="flex items-center gap-3 rounded-xl bg-slate-50 px-4 py-3">
       <div class="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-slate-200">
-        <!-- avatar icon -->
         <svg class="h-5 w-5 text-slate-500" viewBox="0 0 24 24" fill="none">
           <path d="M20 21a8 8 0 1 0-16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor" stroke-width="2"/>
         </svg>
       </div>
-      <div class="min-w-0">
-        <div class="truncate text-sm font-semibold text-slate-900">Student</div>
-        <div class="truncate text-xs text-slate-500">studentiti.gov.eg</div>
+
+      <div class="min-w-0 flex-1">
+        <div class="truncate text-sm font-semibold text-slate-900">{{ role() }}</div>
+        <div class="truncate text-xs text-slate-500">{{ fullName() }}</div>
       </div>
+
+      <button
+        (click)="logout()"
+        class="cursor-pointer rounded-lg px-3 py-2 text-xs font-semibold text-[#0b2b5b]
+               hover:bg-white border border-slate-200"
+      >
+        Logout
+      </button>
     </div>
   </div>
 </aside>
-
