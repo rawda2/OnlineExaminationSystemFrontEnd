@@ -43,6 +43,7 @@ export const routes: Routes = [
       {
         path: 'take-exam/:id',
         component: StudentExamComponent,
+        
       },
       { path: 'exam-results', component: ExamResultComponent },
       { path: 'questions', component: InstructorQuestionsComponent },
