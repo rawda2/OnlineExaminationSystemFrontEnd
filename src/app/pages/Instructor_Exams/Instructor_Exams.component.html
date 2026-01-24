@@ -1,0 +1,439 @@
+<div class="p-4 md:p-8 bg-slate-50 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="mb-8 flex items-center gap-3">
+        <h1 class="text-2xl font-black text-slate-800 tracking-tight flex-1">
+            Exam Management
+        </h1>
+
+        <button (click)="viewMode = viewMode === 'list' ? 'add' : 'list'"
+            class="px-5 py-2.5 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-bold text-sm flex items-center gap-2 group shadow-lg hover:shadow-xl">
+            @if (viewMode === 'list') {
+            <svg class="w-4 h-4 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Create Exam
+            } @else {
+            <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to List
+            }
+        </button>
+    </nav>
+
+    <!-- Exams List View -->
+    @if (viewMode === 'list') {
+    <div class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div
+                class="bg-white rounded-[2.5rem] p-2 shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100">
+                <div class="p-3">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Exams</p>
+                            <h3 class="text-2xl font-black text-slate-800 mt-1">{{ exams.length }}</h3>
+                        </div>
+                        <div class="p-3 bg-blue-50 rounded-2xl">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+           
+        </div>
+
+        <!-- Exams Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            @for (exam of exams; track exam.examId) {
+            <div
+                class="group bg-white rounded-[2.5rem] p-2 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-slate-100">
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <span
+                            class="px-4 py-1.5 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-widest rounded-full">
+                            {{ exam.durationMinutes }} mins
+                        </span>
+                        <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest"
+                            [class]="exam.isPublished ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'">
+                            {{ exam.isPublished ? 'Published' : 'Draft' }}
+                        </span>
+                    </div>
+
+                    <h3 class="text-xl font-black text-slate-800 leading-tight mb-2">{{ exam.title }}</h3>
+
+                    <div class="space-y-3 mb-6">
+                        <div class="flex items-center gap-2">
+                            <span class="text-slate-400 text-sm font-bold">Pass Score:</span>
+                            <span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm font-bold">
+                                {{ exam.passingScore }}/{{ exam.totalMarks }}
+                            </span>
+                            <span class="text-slate-400 text-sm font-bold ml-auto">
+                                ({{ (exam.passingScore/exam.totalMarks*100).toFixed(0) }}%)
+                            </span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            <span class="text-slate-400 text-sm font-bold">Course ID: {{ exam.courseId }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-[2rem] p-3 flex gap-2">
+                    <button (click)="openManageQuestions(exam)"
+                        class="flex-1 py-3 bg-white text-slate-700 hover:bg-blue-600 hover:text-white rounded-[1.5rem] text-xs font-black transition-all flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Questions
+                    </button>
+                    <button
+                        class="h-10 w-10 bg-slate-200 text-slate-600 rounded-[1.5rem] flex items-center justify-center hover:bg-slate-300 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                    </button>
+                    <button (click)="onDelete(exam.examId)"
+                        class="h-10 w-10 bg-red-50 text-red-600 rounded-[1.5rem] flex items-center justify-center hover:bg-red-100 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            } @empty {
+            <div class="col-span-3 text-center py-20 bg-white rounded-[2rem] border-2 border-dashed border-slate-200">
+                <div class="max-w-md mx-auto">
+                    <div class="p-4 bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl inline-flex mb-4">
+                        <svg class="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-black text-slate-700 mb-2">No exams yet</h3>
+                    <p class="text-slate-500 mb-4">Create your first exam to get started</p>
+                    <button (click)="viewMode = 'add'"
+                        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl font-bold">
+                        Create Your First Exam
+                    </button>
+                </div>
+            </div>
+            }
+        </div>
+    </div>
+    }
+
+    <!-- Create Exam Form -->
+    @if (viewMode === 'add') {
+    <div class="max-w-4xl mx-auto animate-in fade-in zoom-in-95 duration-400 pb-8">
+        <div class="bg-white rounded-[2rem] p-6 md:p-8 shadow-xl border border-slate-100">
+            <div class="flex justify-between items-center mb-6 border-b border-slate-50 pb-6">
+                <div>
+                    <h2 class="text-2xl font-black text-slate-800 tracking-tight">Create New Exam</h2>
+                    <p class="text-slate-400 font-medium text-sm">Fill in the details to create a new examination</p>
+                </div>
+                <button (click)="viewMode = 'list'"
+                    class="p-2.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form [formGroup]="examForm" (ngSubmit)="submitExam()" class="space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Course
+                            ID</label>
+                        <input type="number" formControlName="courseId"
+                            class="w-full p-4 bg-slate-50 border-2 border-transparent focus:border-blue-100 focus:bg-white rounded-2xl transition-all text-base font-medium text-slate-700"
+                            placeholder="Enter course ID">
+                        @if (examForm.get('courseId')?.invalid && examForm.get('courseId')?.touched) {
+                        <div class="text-rose-500 text-sm flex items-center gap-1.5 mt-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Course ID is required
+                        </div>
+                        }
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Exam
+                            Title</label>
+                        <input type="text" formControlName="title"
+                            class="w-full p-4 bg-slate-50 border-2 border-transparent focus:border-blue-100 focus:bg-white rounded-2xl transition-all text-base font-medium text-slate-700"
+                            placeholder="e.g., Final Exam - Semester 1">
+                        @if (examForm.get('title')?.invalid && examForm.get('title')?.touched) {
+                        <div class="text-rose-500 text-sm flex items-center gap-1.5 mt-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Title must be at least 3 characters
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Duration
+                            (Minutes)</label>
+                        <div class="relative">
+                            <input type="number" formControlName="durationMinutes"
+                                class="w-full p-4 bg-slate-50 border-2 border-transparent focus:border-blue-100 focus:bg-white rounded-2xl transition-all text-base font-medium text-slate-700">
+                            <svg class="w-5 h-5 text-slate-400 absolute right-4 top-4" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        @if (examForm.get('durationMinutes')?.invalid && examForm.get('durationMinutes')?.touched) {
+                        <div class="text-rose-500 text-sm flex items-center gap-1.5 mt-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Minimum 10 minutes
+                        </div>
+                        }
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Total
+                            Marks</label>
+                        <input type="number" formControlName="totalMarks"
+                            class="w-full p-4 bg-slate-50 border-2 border-transparent focus:border-blue-100 focus:bg-white rounded-2xl transition-all text-base font-medium text-slate-700">
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Passing
+                            Score</label>
+                        <input type="number" formControlName="passingScore"
+                            class="w-full p-4 bg-slate-50 border-2 border-transparent focus:border-blue-100 focus:bg-white rounded-2xl transition-all text-base font-medium text-slate-700">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                    <div class="flex items-center h-5">
+                        <input type="checkbox" id="publish" formControlName="isPublished"
+                            class="w-4 h-4 text-blue-600 bg-white border-slate-300 rounded focus:ring-blue-500 focus:ring-2">
+                    </div>
+                    <div class="ml-2 text-sm">
+                        <label for="publish" class="font-bold text-slate-700 cursor-pointer">Publish immediately</label>
+                        <p class="text-slate-400 text-xs">Make exam available to students</p>
+                    </div>
+                    <div class="ml-auto text-xs text-slate-400">
+                        <span class="font-bold">Note:</span> Draft exams can be published later
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-4 border-t border-slate-50">
+                    <button type="button" (click)="viewMode = 'list'"
+                        class="flex-1 py-3 rounded-xl font-bold text-slate-400 hover:bg-slate-50 transition-all text-sm">Cancel</button>
+                    <button type="submit" [disabled]="examForm.invalid"
+                        [class]="examForm.invalid ? 
+                                'flex-[1.5] py-3 bg-slate-300 text-slate-500 rounded-xl font-bold cursor-not-allowed text-sm' : 
+                                'flex-[1.5] py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition-all text-sm'">
+                        Create Exam
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    }
+
+    <!-- Manage Questions View -->
+    @if (viewMode === 'manage-questions') {
+    <div class="space-y-8 animate-in fade-in zoom-in-95 duration-300">
+        <!-- Exam Header -->
+        <div class="bg-white rounded-[3rem] p-8 shadow-sm border border-slate-100">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
+                <div class="flex-1">
+                    <div class="flex items-center gap-4 mb-2">
+                        <button (click)="viewMode = 'list'"
+                            class="p-2.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                        </button>
+                        <div>
+                            <h2 class="text-2xl font-black text-slate-800">{{ selectedExamForQuestions?.title }}</h2>
+                            <p class="text-slate-400 font-medium">Assign questions from course to this exam</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-4 mt-4">
+                        <span
+                            class="inline-flex items-center gap-2 px-4 py-1.5 bg-slate-100 text-slate-700 rounded-full text-sm font-bold">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                            Course ID: {{ selectedExamForQuestions?.courseId }}
+                        </span>
+                        <span
+                            class="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-sm font-bold">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ selectedExamForQuestions?.durationMinutes }} mins
+                        </span>
+                        <span class="px-4 py-1.5 rounded-full text-sm font-bold"
+                            [class]="selectedExamForQuestions?.isPublished ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'">
+                            {{ selectedExamForQuestions?.isPublished ? 'Published' : 'Draft' }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <span class="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full text-sm font-bold">
+                        Assigned: {{ assignedQuestions.length }}
+                    </span>
+                    <span class="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-bold">
+                        Available: {{ courseQuestions.length }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Available Questions -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-black text-slate-800">Available Questions</h3>
+                        <p class="text-slate-400 text-sm">Click "Add to Exam" to assign questions</p>
+                    </div>
+                    <span class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-bold">
+                        {{ courseQuestions.length }} questions
+                    </span>
+                </div>
+
+                <div class="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+                    @for (q of courseQuestions; track q.questionId) {
+                    <div class="group flex items-center gap-6 p-5 rounded-3xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-all"
+                        [class.bg-emerald-50]="isQuestionAssigned(q.questionId)"
+                        [class.border-emerald-200]="isQuestionAssigned(q.questionId)">
+                        <div class="h-12 w-12 rounded-2xl flex items-center justify-center font-black text-sm transition-colors"
+                            [class]="isQuestionAssigned(q.questionId) ? 
+                                      'bg-emerald-100 text-emerald-700' : 
+                                      'bg-slate-100 text-slate-400 group-hover:bg-blue-600 group-hover:text-white'">
+                            {{ q.questionType === 'MCQ' ? 'M' : 'T/F' }}
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-bold text-slate-700 mb-1">{{ q.questionText }}</p>
+                            <div class="flex items-center gap-3">
+                                <span class="text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded"
+                                    [class]="isQuestionAssigned(q.questionId) ? 
+                                               'bg-emerald-100 text-emerald-700' : 
+                                               'bg-slate-200 text-slate-500'">
+                                    {{ q.questionType }}
+                                </span>
+                                <span class="text-xs text-slate-400 font-bold">{{ q.defaultMark }} Points</span>
+                                @if (isQuestionAssigned(q.questionId)) {
+                                <span class="text-xs text-emerald-600 font-bold flex items-center gap-1">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Assigned
+                                </span>
+                                }
+                            </div>
+                        </div>
+                        <button (click)="assignQuestion(q.questionId)" [disabled]="isQuestionAssigned(q.questionId)"
+                            [class]="isQuestionAssigned(q.questionId) ? 
+                                         'px-4 py-2 bg-slate-100 text-slate-400 rounded-xl cursor-not-allowed text-xs font-bold' : 
+                                         'px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all text-xs font-bold'">
+                            {{ isQuestionAssigned(q.questionId) ? 'Assigned' : 'Add to Exam' }}
+                        </button>
+                    </div>
+                    } @empty {
+                    <div class="text-center py-12 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200">
+                        <svg class="w-12 h-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p class="text-slate-400 font-bold">No questions available for this course.</p>
+                        <p class="text-slate-400 text-sm mt-1">Add questions to the course first!</p>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Assigned Questions -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-black text-slate-800">Assigned Questions</h3>
+                        <p class="text-slate-400 text-sm">Questions already in this exam</p>
+                    </div>
+                    <span class="px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-sm font-bold">
+                        {{ assignedQuestions.length }} assigned
+                    </span>
+                </div>
+
+                <div class="space-y-4 max-h-[600px] overflow-y-auto pr-2">
+                    @for (q of assignedQuestions; track q.questionId; let i = $index) {
+                    <div
+                        class="group flex items-center gap-6 p-5 rounded-3xl border border-emerald-100 bg-emerald-50/50">
+                        <div
+                            class="h-12 w-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                            #{{ i + 1 }}
+                        </div>
+                        <div class="flex-1">
+                            <p class="font-bold text-slate-700 mb-1">{{ q.questionText || 'Loading...' }}</p>
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded">
+                                    {{ q.questionType || 'MCQ' }}
+                                </span>
+                                <span class="text-xs text-emerald-600 font-bold">{{ q.points || q.defaultMark || 0 }}
+                                    Points</span>
+                            </div>
+                        </div>
+                        <!-- Uncomment if you have remove functionality -->
+                        <!--
+                        <button (click)="removeQuestion(q.questionId)"
+                                class="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all text-xs font-bold">
+                            Remove
+                        </button>
+                        -->
+                    </div>
+                    } @empty {
+                    <div class="text-center py-12 bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200">
+                        <svg class="w-12 h-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <p class="text-slate-400 font-bold">No questions assigned yet</p>
+                        <p class="text-slate-400 text-sm mt-1">Add questions from the available list</p>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+</div>

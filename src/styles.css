@@ -1,1 +1,12 @@
-@import "tailwindcss";/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+/* Add a custom font to match the elegant image */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap");
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f8f9fa;
+}
+.shadow-blue-200 {
+  box-shadow: 0 10px 15px -3px rgba(0, 133, 199, 0.2);
+}
