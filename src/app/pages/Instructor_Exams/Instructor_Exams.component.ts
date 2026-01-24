@@ -16,7 +16,7 @@ import { IQuestion as IQuestionFromService } from '../../shared/interfaces/Instr
   selector: 'app-instructor-exams',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './instructor_Exams.component.html',
+  templateUrl: './Instructor_Exams.component.html',
 })
 export class InstructorExamsComponent implements OnInit {
   private examService = inject(ExamService);
