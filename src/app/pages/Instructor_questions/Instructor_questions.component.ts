@@ -122,16 +122,36 @@ export class InstructorQuestionsComponent implements OnInit {
   }
 
   submitQuestion() {
-    if (this.questionForm.valid) {
-      console.log('Payload:', this.questionForm.value);
+  if (!this.questionForm.valid) {
+    this.toastService.show('Please complete the form correctly.', 'error');
+    return;
+  }
 
+  const payload = {
+    ...this.questionForm.value,
+    instructorId: Number(this.questionForm.value.instructorId),
+    courseId: Number(this.questionForm.value.courseId),
+    defaultMark: Number(this.questionForm.value.defaultMark),
+  };
+
+  console.log('Sending payload:', payload);
+
+  this.instructorService.addQuestion(payload).subscribe({
+    next: () => {
       this.toastService.show('Question saved successfully! 🎉', 'success');
 
       if (this.selectedCourse) {
         this.viewQuestions(this.selectedCourse);
       }
-    } else {
-      this.toastService.show('Please complete the form correctly.', 'error');
-    }
-  }
+    },
+    error: (err) => {
+      console.error('Add question error:', err);
+      this.toastService.show(
+        err.error?.message || 'Failed to add question',
+        'error'
+      );
+    },
+  });
+}
+
 }
