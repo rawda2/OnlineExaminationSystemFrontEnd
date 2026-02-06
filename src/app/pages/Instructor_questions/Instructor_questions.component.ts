@@ -68,6 +68,7 @@ export class InstructorQuestionsComponent implements OnInit {
       next: (data) => {
         this.questions = data;
         this.viewMode = 'questions';
+        console.log('Questions loaded for course', course.courseId, data);  
       },
       error: () => this.toastService.show('Error fetching questions', 'error'),
     });
@@ -122,16 +123,37 @@ export class InstructorQuestionsComponent implements OnInit {
   }
 
   submitQuestion() {
-    if (this.questionForm.valid) {
-      console.log('Payload:', this.questionForm.value);
+  if (this.questionForm.valid) {
+    const payload = this.questionForm.value;
+    console.log('Payload:', payload);
 
-      this.toastService.show('Question saved successfully! 🎉', 'success');
+    this.instructorService.c(payload).subscribe({
+      next: (response) => {
+        this.toastService.show('Question saved successfully! 🎉', 'success');
+        console.log('Response:', response);
 
-      if (this.selectedCourse) {
-        this.viewQuestions(this.selectedCourse);
-      }
-    } else {
-      this.toastService.show('Please complete the form correctly.', 'error');
-    }
+        if (this.selectedCourse) {
+          this.viewQuestions(this.selectedCourse);
+        }
+
+        this.questionForm.reset({
+          instructorId: this.instructorId,
+          courseId: this.selectedCourse?.courseId || 0,
+          questionType: 'MCQ',
+          defaultMark: 5,
+          questionText: '',
+        });
+
+        this.onTypeChange();
+      },
+      error: (err) => {
+        console.error('Error saving question:', err);
+        this.toastService.show('Failed to save question.', 'error');
+      },
+    });
+  } else {
+    this.toastService.show('Please complete the form correctly.', 'error');
   }
+}
+
 }

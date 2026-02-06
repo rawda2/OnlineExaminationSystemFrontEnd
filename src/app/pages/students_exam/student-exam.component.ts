@@ -12,39 +12,50 @@ import { ModalComponent } from '../../shared/components/modal/modal.component';
   templateUrl: './student-exam.component.html',
 })
 export class StudentExamComponent implements OnInit {
+  returnToExams() {
+    this.router.navigate(['/app/exams']);
+}
   private route = inject(ActivatedRoute);
   private examService = inject(ExamService);
   private router = inject(Router);
 
-  exam!: IExamDetails;
+  exam: IExamDetails | null = null;
   attemptId!: number;
   currentQuestionIndex = 0;
-  selectedAnswers: Map<number, number> = new Map(); 
+  selectedAnswers: Map<number, number> = new Map();
   
   showConfirmModal = false;
   isSubmitting = false;
-  ngOnInit(): void {
-    // Get the Exam ID from the URL path: /app/student-exam/10
-    const id = Number(this.route.snapshot.paramMap.get('id'));
+  isLoading = true;
+  errorMessage = '';
 
+  ngOnInit(): void {
+    const id = Number(this.route.snapshot.paramMap.get('id'));
     this.attemptId = Number(this.route.snapshot.queryParamMap.get('attemptId'));
 
     if (!this.attemptId) {
-      alert('No active attempt found. Please start the exam again.');
-      this.router.navigate(['/app/exams']);
+      this.errorMessage = 'No active attempt found. Please start the exam again.';
+      this.isLoading = false;
       return;
     }
 
     this.examService.getExamDetails(id).subscribe({
-      next: (data) => (this.exam = data),
-      error: (err) => console.error('Could not load exam', err),
+      next: (data) => {
+        this.exam = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Could not load exam', err);
+        this.errorMessage = err.error?.message || 'Failed to load exam. Please try again.';
+        this.isLoading = false;
+      },
     });
   }
+
   openSubmitModal() {
     this.showConfirmModal = true;
   }
 
-  // Step 2: Triggered by the "Cancel" button in the Modal
   closeModal() {
     this.showConfirmModal = false;
   }
@@ -76,8 +87,9 @@ export class StudentExamComponent implements OnInit {
       });
     }
   }
+
   goToNext() {
-    if (this.currentQuestionIndex < this.exam.questions.length - 1) {
+    if (this.exam && this.currentQuestionIndex < this.exam.questions.length - 1) {
       this.currentQuestionIndex++;
     }
   }
@@ -95,7 +107,6 @@ export class StudentExamComponent implements OnInit {
       next: (res) => {
         console.log('Exam Finalized:', res);
         this.showConfirmModal = false;
-        // Navigate to exams or a result page
         this.router.navigate(['/app/exam-results']);
       },
       error: (err) => {
@@ -105,5 +116,4 @@ export class StudentExamComponent implements OnInit {
       },
     });
   }
- }
-
+}
