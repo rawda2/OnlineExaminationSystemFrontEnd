@@ -28,7 +28,7 @@ export class InstructorQuestionsComponent implements OnInit {
   questions: IQuestion[] = [];
 
   // State Management
-  instructorId = 42;
+  instructorId!: number;
   viewMode: 'courses' | 'questions' | 'add' = 'courses';
   questionForm: FormGroup;
 
@@ -44,8 +44,25 @@ export class InstructorQuestionsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.setInstructorIdFromStorage();
     this.loadCourses();
   }
+
+  private setInstructorIdFromStorage() {
+  const userJson = localStorage.getItem('current_user');
+
+  if (!userJson) {
+    this.toastService.show('User not logged in', 'error');
+    return;
+  }
+
+  const user = JSON.parse(userJson);
+
+  this.instructorId = Number(user.userId);
+
+  console.log('InstructorId from localStorage:', this.instructorId);
+}
+
 
   // --- NAVIGATION ---
 
