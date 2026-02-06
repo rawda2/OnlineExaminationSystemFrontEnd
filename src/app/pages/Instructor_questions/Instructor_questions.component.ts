@@ -28,7 +28,7 @@ export class InstructorQuestionsComponent implements OnInit {
   questions: IQuestion[] = [];
 
   // State Management
-  instructorId = 42;
+  instructorId!: number;
   viewMode: 'courses' | 'questions' | 'add' = 'courses';
   questionForm: FormGroup;
 
@@ -44,8 +44,25 @@ export class InstructorQuestionsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.setInstructorIdFromStorage();
     this.loadCourses();
   }
+
+  private setInstructorIdFromStorage() {
+  const userJson = localStorage.getItem('current_user');
+
+  if (!userJson) {
+    this.toastService.show('User not logged in', 'error');
+    return;
+  }
+
+  const user = JSON.parse(userJson);
+
+  this.instructorId = Number(user.userId);
+
+  console.log('InstructorId from localStorage:', this.instructorId);
+}
+
 
   // --- NAVIGATION ---
 
@@ -123,37 +140,36 @@ export class InstructorQuestionsComponent implements OnInit {
   }
 
   submitQuestion() {
-  if (this.questionForm.valid) {
-    const payload = this.questionForm.value;
-    console.log('Payload:', payload);
-
-    this.instructorService.c(payload).subscribe({
-      next: (response) => {
-        this.toastService.show('Question saved successfully! 🎉', 'success');
-        console.log('Response:', response);
-
-        if (this.selectedCourse) {
-          this.viewQuestions(this.selectedCourse);
-        }
-
-        this.questionForm.reset({
-          instructorId: this.instructorId,
-          courseId: this.selectedCourse?.courseId || 0,
-          questionType: 'MCQ',
-          defaultMark: 5,
-          questionText: '',
-        });
-
-        this.onTypeChange();
-      },
-      error: (err) => {
-        console.error('Error saving question:', err);
-        this.toastService.show('Failed to save question.', 'error');
-      },
-    });
-  } else {
+  if (!this.questionForm.valid) {
     this.toastService.show('Please complete the form correctly.', 'error');
+    return;
   }
+
+  const payload = {
+    ...this.questionForm.value,
+    instructorId: Number(this.questionForm.value.instructorId),
+    courseId: Number(this.questionForm.value.courseId),
+    defaultMark: Number(this.questionForm.value.defaultMark),
+  };
+
+  console.log('Sending payload:', payload);
+
+  this.instructorService.addQuestion(payload).subscribe({
+    next: () => {
+      this.toastService.show('Question saved successfully! 🎉', 'success');
+
+      if (this.selectedCourse) {
+        this.viewQuestions(this.selectedCourse);
+      }
+    },
+    error: (err) => {
+      console.error('Add question error:', err);
+      this.toastService.show(
+        err.error?.message || 'Failed to add question',
+        'error'
+      );
+    },
+  });
 }
 
 }

@@ -1,46 +1,27 @@
-<div class="min-h-screen w-full bg-slate-50">
-  <div class="flex min-h-screen w-full flex-col lg:flex-row">
+<div class="min-h-screen w-full bg-slate-50 flex items-center justify-center px-4 py-10">
 
-    <!-- LEFT SECTION (HIDDEN ON MOBILE) -->
-    <section
-      class="relative hidden w-full items-center justify-center overflow-hidden px-8 py-12 lg:flex lg:w-1/2 lg:py-0"
-    >
-      <div class="absolute inset-0 bg-gradient-to-br from-[#0b2b5b] via-[#1f5ea8] to-[#19a7a5]"></div>
-      <div class="absolute -left-24 -top-24 h-64 w-64 rounded-full bg-white/10 blur-2xl"></div>
-      <div class="absolute -right-24 -bottom-24 h-64 w-64 rounded-full bg-black/10 blur-2xl"></div>
+  <!-- LOGIN CARD -->
+  <div
+    class="flex w-full max-w-7xl overflow-hidden rounded-2xl
+           shadow-[0_25px_60px_-15px_rgba(11,43,91,0.6)] flex items-center justify-center bg-white"
+  >
 
-      <div class="relative z-10 w-full max-w-lg text-white">
-        <h1 class="text-4xl font-extrabold leading-tight sm:text-5xl">
-          Information
-          <span class="block">Technology</span>
-          <span class="block text-white/80">Institute</span>
-        </h1>
+    <!-- LEFT IMAGE -->
+    <!-- LEFT IMAGE – NO CROPPING, FULL IMAGE ALWAYS -->
+<section
+  class="hidden lg:flex lg:w-1/2"
+>
+  <div class="flex w-full items-start justify-center">
+    <img
+      src="/Tablet login.gif"
+      alt="Login illustration"
+      class="w-full max-w-[700px] h-auto object-contain"
+    />
+  </div>
+</section>
 
-        <p class="mt-6 max-w-md text-white/80 leading-relaxed">
-          A leading national institute providing hands-on technical training,
-          industry-focused tracks, and real-world projects to empower future
-          technology leaders.
-        </p>
 
-        <div class="mt-8 space-y-3">
-          <div class="flex items-center gap-3 text-white/90">
-            <span class="h-2 w-2 rounded-full bg-white/90"></span>
-            <span>Practical & project-based learning</span>
-          </div>
-          <div class="flex items-center gap-3 text-white/90">
-            <span class="h-2 w-2 rounded-full bg-white/90"></span>
-            <span>Specialized IT career tracks</span>
-          </div>
-          <div class="flex items-center gap-3 text-white/90">
-            <span class="h-2 w-2 rounded-full bg-white/90"></span>
-            <span>Career readiness & mentorship</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- RIGHT SECTION -->
-    <section class="flex w-full items-center justify-center px-6 py-12 lg:w-1/2">
+       <section class="flex w-full lg:w-1/2 items-center justify-center px-6 py-12 bg-white">
       <div class="w-full max-w-md">
 
         <!-- LOGO ABOVE TITLE -->
@@ -196,7 +177,7 @@
             [disabled]="isSubmitting"
             class="mt-2 w-full rounded-xl bg-[#0b2b5b] py-3 font-semibold text-white transition
                    hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70
-                   focus:outline-none focus:ring-4 focus:ring-[#0b2b5b]/20"
+                   focus:outline-none focus:ring-4 focus:ring-[#0b2b5b]/20 cursor-pointer"
           >
             <span *ngIf="!isSubmitting">Login</span>
             <span *ngIf="isSubmitting" class="inline-flex items-center gap-2">
@@ -213,5 +194,6 @@
         </form>
       </div>
     </section>
+
   </div>
 </div>

@@ -1,4 +1,4 @@
-// features/instructor-exams/instructor-exams.component.ts
+ // features/instructor-exams/instructor-exams.component.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -188,7 +188,7 @@ export class InstructorExamsComponent implements OnInit {
 
   private getNextAvailableOrderNumber(): number {
     if (this.assignedQuestions.length === 0) {
-      return 1; 
+      return 1;
     }
 
     const existingOrderNumbers = this.assignedQuestions
@@ -200,7 +200,7 @@ export class InstructorExamsComponent implements OnInit {
 
     for (let i = 0; i < existingOrderNumbers.length; i++) {
       if (existingOrderNumbers[i] !== i + 1) {
-        return i + 1; 
+        return i + 1;
       }
     }
 
@@ -219,7 +219,7 @@ export class InstructorExamsComponent implements OnInit {
       return;
     }
 
-  
+
   }
 
   isQuestionAssigned(questionId: number): boolean {

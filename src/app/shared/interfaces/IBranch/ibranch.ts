@@ -1,4 +1,4 @@
 export interface IBranch {
-  trackId: number;
-  trackName: string;
+  branchId: number;
+  branchName: string;
 }
