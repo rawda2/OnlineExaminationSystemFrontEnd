@@ -117,7 +117,6 @@ export class ExamResultComponent implements OnInit {
     if (this.attemptToDeleteId) {
       this.examService.deleteAttempt(this.attemptToDeleteId).subscribe({
         next: (response) => {
-          // Remove from local arrays
           this.attempts = this.attempts.filter(
             (a) => a.attemptId !== this.attemptToDeleteId,
           );

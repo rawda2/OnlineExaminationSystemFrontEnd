@@ -7,6 +7,8 @@ import { Router } from '@angular/router';
 import { ILoginRequest } from '../../../shared/interfaces/Auth/ILoginRequest';
 import { ILoginResponse } from '../../../shared/interfaces/Auth/ILoginRespone';
 import { environment } from '../../environment/environment';
+import { IRegisterResponse } from '../../../shared/interfaces/Auth/IRegisterResponse';
+import { IRegisterRequest } from '../../../shared/interfaces/Auth/IRegisterRequest';
 
 
 @Injectable({ providedIn: 'root' })
@@ -32,6 +34,13 @@ export class AuthService {
       data
     );
   }
+  register(data: IRegisterRequest): Observable<IRegisterResponse> {
+  return this.http.post<IRegisterResponse>(
+    `${environment.baseURL}Auth/register-student`,
+    data
+  );
+}
+
 
   handleLoginSuccess(res: ILoginResponse): void {
     if (!isPlatformBrowser(this.platformId)) return;

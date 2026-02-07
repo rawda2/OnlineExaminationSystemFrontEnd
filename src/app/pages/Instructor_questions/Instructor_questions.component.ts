@@ -28,7 +28,7 @@ export class InstructorQuestionsComponent implements OnInit {
   questions: IQuestion[] = [];
 
   // State Management
-  instructorId = 42;
+  instructorId!: number;
   viewMode: 'courses' | 'questions' | 'add' = 'courses';
   questionForm: FormGroup;
 
@@ -44,8 +44,25 @@ export class InstructorQuestionsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.setInstructorIdFromStorage();
     this.loadCourses();
   }
+
+  private setInstructorIdFromStorage() {
+  const userJson = localStorage.getItem('current_user');
+
+  if (!userJson) {
+    this.toastService.show('User not logged in', 'error');
+    return;
+  }
+
+  const user = JSON.parse(userJson);
+
+  this.instructorId = Number(user.userId);
+
+  console.log('InstructorId from localStorage:', this.instructorId);
+}
+
 
   // --- NAVIGATION ---
 
@@ -68,6 +85,7 @@ export class InstructorQuestionsComponent implements OnInit {
       next: (data) => {
         this.questions = data;
         this.viewMode = 'questions';
+        console.log('Questions loaded for course', course.courseId, data);  
       },
       error: () => this.toastService.show('Error fetching questions', 'error'),
     });
@@ -122,16 +140,36 @@ export class InstructorQuestionsComponent implements OnInit {
   }
 
   submitQuestion() {
-    if (this.questionForm.valid) {
-      console.log('Payload:', this.questionForm.value);
+  if (!this.questionForm.valid) {
+    this.toastService.show('Please complete the form correctly.', 'error');
+    return;
+  }
 
+  const payload = {
+    ...this.questionForm.value,
+    instructorId: Number(this.questionForm.value.instructorId),
+    courseId: Number(this.questionForm.value.courseId),
+    defaultMark: Number(this.questionForm.value.defaultMark),
+  };
+
+  console.log('Sending payload:', payload);
+
+  this.instructorService.addQuestion(payload).subscribe({
+    next: () => {
       this.toastService.show('Question saved successfully! 🎉', 'success');
 
       if (this.selectedCourse) {
         this.viewQuestions(this.selectedCourse);
       }
-    } else {
-      this.toastService.show('Please complete the form correctly.', 'error');
-    }
-  }
+    },
+    error: (err) => {
+      console.error('Add question error:', err);
+      this.toastService.show(
+        err.error?.message || 'Failed to add question',
+        'error'
+      );
+    },
+  });
+}
+
 }

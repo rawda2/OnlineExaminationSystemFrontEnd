@@ -1,26 +1,33 @@
-<div class="p-4 md:p-8 bg-slate-50 min-h-screen">
+<div class="px-4 md:p-8 bg-slate-50 min-h-screen">
     <!-- Navigation Header -->
     <nav class="mb-8 flex items-center gap-3">
         <h1 class="text-2xl font-black text-slate-800 tracking-tight flex-1">
             Exam Management
         </h1>
 
-        <button (click)="viewMode = viewMode === 'list' ? 'add' : 'list'"
+        <!-- Show Create button only in list view -->
+        @if (viewMode === 'list') {
+        <button (click)="openAddExam()"
             class="px-5 py-2.5 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 font-bold text-sm flex items-center gap-2 group shadow-lg hover:shadow-xl">
-            @if (viewMode === 'list') {
             <svg class="w-4 h-4 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor"
                 viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             Create Exam
-            } @else {
+        </button>
+        }
+
+        <!-- Show Back button in add/edit mode -->
+        @if (viewMode === 'add' || viewMode === 'edit') {
+        <button (click)="cancelForm()"
+            class="px-5 py-2.5 bg-slate-200 text-slate-700 rounded-2xl hover:bg-slate-300 transition-all duration-300 font-bold text-sm flex items-center gap-2 group shadow-lg hover:shadow-xl">
             <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor"
                 viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Back to List
-            }
         </button>
+        }
     </nav>
 
     <!-- Exams List View -->
@@ -45,8 +52,6 @@
                     </div>
                 </div>
             </div>
-
-           
         </div>
 
         <!-- Exams Grid -->
@@ -97,14 +102,15 @@
                         </svg>
                         Questions
                     </button>
-                    <button
-                        class="h-10 w-10 bg-slate-200 text-slate-600 rounded-[1.5rem] flex items-center justify-center hover:bg-slate-300 transition-all">
+                    <button (click)="openEditExam(exam)"
+                        class="h-10 w-10 bg-slate-200 text-slate-600 rounded-[1.5rem] flex items-center justify-center hover:bg-slate-300 transition-all"
+                        title="Edit Exam">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                     </button>
-                    <button (click)="onDelete(exam.examId)"
+                    <button (click)="openDeleteModal(exam.examId)">
                         class="h-10 w-10 bg-red-50 text-red-600 rounded-[1.5rem] flex items-center justify-center hover:bg-red-100 transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -124,7 +130,7 @@
                     </div>
                     <h3 class="text-lg font-black text-slate-700 mb-2">No exams yet</h3>
                     <p class="text-slate-500 mb-4">Create your first exam to get started</p>
-                    <button (click)="viewMode = 'add'"
+                    <button (click)="openAddExam()"
                         class="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl font-bold">
                         Create Your First Exam
                     </button>
@@ -135,16 +141,18 @@
     </div>
     }
 
-    <!-- Create Exam Form -->
-    @if (viewMode === 'add') {
-    <div class="max-w-4xl mx-auto animate-in fade-in zoom-in-95 duration-400 pb-8">
-        <div class="bg-white rounded-[2rem] p-6 md:p-8 shadow-xl border border-slate-100">
-            <div class="flex justify-between items-center mb-6 border-b border-slate-50 pb-6">
+    <!-- Create/Edit Exam Form -->
+    @if (viewMode === 'add' || viewMode === 'edit') {
+    <div class="max-w-4xl mx-auto animate-in fade-in zoom-in-95 duration-400 ">
+        <div class="bg-white rounded-[2rem] px-6 md:p-8 shadow-xl border border-slate-100">
+            <div class="flex justify-between items-center  border-b border-slate-50">
                 <div>
-                    <h2 class="text-2xl font-black text-slate-800 tracking-tight">Create New Exam</h2>
-                    <p class="text-slate-400 font-medium text-sm">Fill in the details to create a new examination</p>
+                    <h2 class="text-2xl font-black text-slate-800 tracking-tight">
+                        {{ isEditing ? 'Edit Exam' : 'Create New Exam' }}
+                    </h2>
+                   
                 </div>
-                <button (click)="viewMode = 'list'"
+                <button (click)="cancelForm()"
                     class="p-2.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -153,43 +161,76 @@
                 </button>
             </div>
 
-            <form [formGroup]="examForm" (ngSubmit)="submitExam()" class="space-y-6">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Course
-                            ID</label>
-                        <input type="number" formControlName="courseId"
-                            class="w-full p-4 bg-slate-50 border-2 border-transparent focus:border-blue-100 focus:bg-white rounded-2xl transition-all text-base font-medium text-slate-700"
-                            placeholder="Enter course ID">
-                        @if (examForm.get('courseId')?.invalid && examForm.get('courseId')?.touched) {
-                        <div class="text-rose-500 text-sm flex items-center gap-1.5 mt-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Course ID is required
-                        </div>
-                        }
-                    </div>
+            <form [formGroup]="examForm" (ngSubmit)="submitExam()" class="space-y-6 py-3">
+                <!-- Hidden fields -->
+                <input type="hidden" formControlName="examId">
+                <input type="hidden" formControlName="instructorId">
 
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Exam
-                            Title</label>
-                        <input type="text" formControlName="title"
-                            class="w-full p-4 bg-slate-50 border-2 border-transparent focus:border-blue-100 focus:bg-white rounded-2xl transition-all text-base font-medium text-slate-700"
-                            placeholder="e.g., Final Exam - Semester 1">
-                        @if (examForm.get('title')?.invalid && examForm.get('title')?.touched) {
-                        <div class="text-rose-500 text-sm flex items-center gap-1.5 mt-1">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            Title must be at least 3 characters
-                        </div>
-                        }
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Select Course</label>
+            
+                    @if (loadingCourses) {
+                    <div
+                        class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl text-base font-medium text-slate-700 flex items-center justify-center">
+                        <svg class="w-4 h-4 animate-spin text-blue-600 mr-2" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        Loading courses...
                     </div>
+                    } @else {
+                    <select formControlName="courseId"
+                        class="w-full p-4  bg-slate-50 border-2 border-transparent focus:border-blue-100 focus:bg-white rounded-2xl transition-all text-base font-medium text-slate-700 appearance-none cursor-pointer">
+                        <option value="" disabled selected>Select a course</option>
+                        @for (course of courses; track course.courseId) {
+                        <option [value]="course.courseId">{{ course.courseName }}</option>
+                        }
+                    </select>
+                    }
+            
+                    @if (examForm.get('courseId')?.invalid && examForm.get('courseId')?.touched) {
+                    <div class="text-rose-500 text-sm flex items-center gap-1.5 mt-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Please select a course
+                    </div>
+                    }
+            
+                    @if (courses.length === 0 && !loadingCourses) {
+                    <div class="text-amber-500 text-sm flex items-center gap-1.5 mt-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        No courses available. Please create a course first.
+                    </div>
+                    }
                 </div>
+            
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Exam
+                        Title</label>
+                    <input type="text" formControlName="title"
+                        class="w-full p-4 bg-slate-50 border-2 border-transparent focus:border-blue-100 focus:bg-white rounded-2xl transition-all text-base font-medium text-slate-700"
+                        placeholder="e.g., Final Exam - Semester 1">
+                    @if (examForm.get('title')?.invalid && examForm.get('title')?.touched) {
+                    <div class="text-rose-500 text-sm flex items-center gap-1.5 mt-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Title must be at least 3 characters
+                    </div>
+                    }
+                </div>
+            </div>
 
+                
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="space-y-2">
                         <label class="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Duration
@@ -226,6 +267,15 @@
                             Score</label>
                         <input type="number" formControlName="passingScore"
                             class="w-full p-4 bg-slate-50 border-2 border-transparent focus:border-blue-100 focus:bg-white rounded-2xl transition-all text-base font-medium text-slate-700">
+                        @if (examForm.get('passingScore')?.value > examForm.get('totalMarks')?.value) {
+                        <div class="text-rose-500 text-sm flex items-center gap-1.5 mt-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Passing score cannot exceed total marks
+                        </div>
+                        }
                     </div>
                 </div>
 
@@ -235,8 +285,12 @@
                             class="w-4 h-4 text-blue-600 bg-white border-slate-300 rounded focus:ring-blue-500 focus:ring-2">
                     </div>
                     <div class="ml-2 text-sm">
-                        <label for="publish" class="font-bold text-slate-700 cursor-pointer">Publish immediately</label>
-                        <p class="text-slate-400 text-xs">Make exam available to students</p>
+                        <label for="publish" class="font-bold text-slate-700 cursor-pointer">
+                            {{ isEditing ? 'Update publication status' : 'Publish immediately' }}
+                        </label>
+                        <p class="text-slate-400 text-xs">
+                            {{ isEditing ? 'Change exam availability to students' : 'Make exam available to students' }}
+                        </p>
                     </div>
                     <div class="ml-auto text-xs text-slate-400">
                         <span class="font-bold">Note:</span> Draft exams can be published later
@@ -244,13 +298,27 @@
                 </div>
 
                 <div class="flex gap-3 pt-4 border-t border-slate-50">
-                    <button type="button" (click)="viewMode = 'list'"
+                    <button type="button" (click)="cancelForm()"
                         class="flex-1 py-3 rounded-xl font-bold text-slate-400 hover:bg-slate-50 transition-all text-sm">Cancel</button>
-                    <button type="submit" [disabled]="examForm.invalid"
-                        [class]="examForm.invalid ? 
-                                'flex-[1.5] py-3 bg-slate-300 text-slate-500 rounded-xl font-bold cursor-not-allowed text-sm' : 
+                    <button type="submit" [disabled]="examForm.invalid || isLoading"
+                        [class]="examForm.invalid || isLoading ?
+                                'flex-[1.5] py-3 bg-slate-300 text-slate-500 rounded-xl font-bold cursor-not-allowed text-sm' :
                                 'flex-[1.5] py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition-all text-sm'">
-                        Create Exam
+                        @if (isLoading) {
+                        <span class="flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4">
+                                </circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            {{ isEditing ? 'Updating...' : 'Creating...' }}
+                        </span>
+                        } @else {
+                        {{ isEditing ? 'Update Exam' : 'Create Exam' }}
+                        }
                     </button>
                 </div>
             </form>
@@ -266,7 +334,7 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-6">
                 <div class="flex-1">
                     <div class="flex items-center gap-4 mb-2">
-                        <button (click)="viewMode = 'list'"
+                        <button (click)="closeManageQuestions()"
                             class="p-2.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -334,8 +402,8 @@
                         [class.bg-emerald-50]="isQuestionAssigned(q.questionId)"
                         [class.border-emerald-200]="isQuestionAssigned(q.questionId)">
                         <div class="h-12 w-12 rounded-2xl flex items-center justify-center font-black text-sm transition-colors"
-                            [class]="isQuestionAssigned(q.questionId) ? 
-                                      'bg-emerald-100 text-emerald-700' : 
+                            [class]="isQuestionAssigned(q.questionId) ?
+                                      'bg-emerald-100 text-emerald-700' :
                                       'bg-slate-100 text-slate-400 group-hover:bg-blue-600 group-hover:text-white'">
                             {{ q.questionType === 'MCQ' ? 'M' : 'T/F' }}
                         </div>
@@ -343,8 +411,8 @@
                             <p class="font-bold text-slate-700 mb-1">{{ q.questionText }}</p>
                             <div class="flex items-center gap-3">
                                 <span class="text-[10px] font-black uppercase tracking-tighter px-2 py-0.5 rounded"
-                                    [class]="isQuestionAssigned(q.questionId) ? 
-                                               'bg-emerald-100 text-emerald-700' : 
+                                    [class]="isQuestionAssigned(q.questionId) ?
+                                               'bg-emerald-100 text-emerald-700' :
                                                'bg-slate-200 text-slate-500'">
                                     {{ q.questionType }}
                                 </span>
@@ -361,8 +429,8 @@
                             </div>
                         </div>
                         <button (click)="assignQuestion(q.questionId)" [disabled]="isQuestionAssigned(q.questionId)"
-                            [class]="isQuestionAssigned(q.questionId) ? 
-                                         'px-4 py-2 bg-slate-100 text-slate-400 rounded-xl cursor-not-allowed text-xs font-bold' : 
+                            [class]="isQuestionAssigned(q.questionId) ?
+                                         'px-4 py-2 bg-slate-100 text-slate-400 rounded-xl cursor-not-allowed text-xs font-bold' :
                                          'px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all text-xs font-bold'">
                             {{ isQuestionAssigned(q.questionId) ? 'Assigned' : 'Add to Exam' }}
                         </button>
@@ -437,3 +505,28 @@
     </div>
     }
 </div>
+<app-modal [isOpen]="isDeleteModalOpen" [title]="'Confirm Deletion'" (close)="closeDeleteModal()">
+    <div class="text-center">
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-rose-100 mb-4">
+            <svg class="h-8 w-8 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+        </div>
+
+        <p class="text-slate-600 mb-8">
+            Are you sure you want to delete this Exam? 
+        </p>
+
+        <div class="flex gap-4">
+            <button (click)="closeDeleteModal()"
+                class="flex-1 px-6 py-3 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200 transition-colors">
+                Cancel
+            </button>
+            <button (click)="confirmDelete()"
+                class="flex-1 px-6 py-3 bg-rose-600 text-white font-bold rounded-2xl hover:bg-rose-700 shadow-lg shadow-rose-200 transition-all">
+                Yes, Delete
+            </button>
+        </div>
+    </div>
+</app-modal>
