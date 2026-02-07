@@ -85,6 +85,7 @@ export class InstructorQuestionsComponent implements OnInit {
       next: (data) => {
         this.questions = data;
         this.viewMode = 'questions';
+        console.log('Questions loaded for course', course.courseId, data);  
       },
       error: () => this.toastService.show('Error fetching questions', 'error'),
     });

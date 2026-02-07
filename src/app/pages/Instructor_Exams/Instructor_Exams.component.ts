@@ -1,4 +1,3 @@
- // features/instructor-exams/instructor-exams.component.ts
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -10,12 +9,16 @@ import {
 import { ExamService } from '../../core/services/Instructor_exams/Instructor_Exams.service';
 import { InstructorQuestionsService } from '../../core/services/Instructor/Instructor_questions.service';
 import { ToastService } from '../../core/services/Toast/Toast.service';
-import { IQuestion as IQuestionFromService } from '../../shared/interfaces/Instructor_questions/IQuestions';
+import {
+  IQuestion as IQuestionFromService,
+  ICourse,
+} from '../../shared/interfaces/Instructor_questions/IQuestions';
+import { ModalComponent } from "../../shared/components/modal/modal.component";
 
 @Component({
   selector: 'app-instructor-exams',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ModalComponent],
   templateUrl: './Instructor_Exams.component.html',
 })
 export class InstructorExamsComponent implements OnInit {
@@ -28,17 +31,22 @@ export class InstructorExamsComponent implements OnInit {
   instructorId = JSON.parse(this.currentUser || '{}').userId;
 
   exams: any[] = [];
+  courses: ICourse[] = []; // Add courses array
   courseQuestions: IQuestionFromService[] = [];
-  assignedQuestions: any[] = []; // Store actual assigned questions data
+  assignedQuestions: any[] = [];
   selectedExamForQuestions: any = null;
-  viewMode: 'list' | 'add' | 'manage-questions' = 'list';
+  selectedExamForEdit: any = null;
+  viewMode: 'list' | 'add' | 'edit' | 'manage-questions' = 'list';
   examForm: FormGroup;
   isLoading = false;
+  isEditing = false;
+  loadingCourses = false; // Add loading state for courses
 
   constructor() {
     this.examForm = this.fb.group({
       instructorId: [this.instructorId],
-      courseId: [null, Validators.required], // Changed from '' to null
+      examId: [null],
+      courseId: [null, Validators.required],
       title: ['', [Validators.required, Validators.minLength(3)]],
       durationMinutes: [60, [Validators.required, Validators.min(10)]],
       totalMarks: [100, Validators.required],
@@ -49,6 +57,23 @@ export class InstructorExamsComponent implements OnInit {
 
   ngOnInit() {
     this.loadMyExams();
+    this.loadInstructorCourses(); // Load courses on init
+  }
+
+  loadInstructorCourses() {
+    this.loadingCourses = true;
+    this.questionsService.getCourses(this.instructorId).subscribe({
+      next: (data) => {
+        console.log('Courses loaded:', data);
+        this.courses = data;
+        this.loadingCourses = false;
+      },
+      error: (err) => {
+        console.error('Error loading courses:', err);
+        this.toastService.show('Failed to load courses', 'error');
+        this.loadingCourses = false;
+      },
+    });
   }
 
   loadMyExams() {
@@ -67,6 +92,57 @@ export class InstructorExamsComponent implements OnInit {
     });
   }
 
+  openAddExam(): void {
+    this.viewMode = 'add';
+    this.isEditing = false;
+    this.selectedExamForEdit = null;
+    this.examForm.reset({
+      instructorId: this.instructorId,
+      examId: null,
+      courseId: null,
+      title: '',
+      durationMinutes: 60,
+      totalMarks: 100,
+      passingScore: 50,
+      isPublished: false,
+    });
+  }
+
+  // Open edit exam form
+  openEditExam(exam: any) {
+    console.log('Opening edit for exam:', exam);
+    this.viewMode = 'edit';
+    this.isEditing = true;
+    this.selectedExamForEdit = exam;
+
+    this.examForm.patchValue({
+      instructorId: this.instructorId,
+      examId: exam.examId,
+      courseId: exam.courseId,
+      title: exam.title,
+      durationMinutes: exam.durationMinutes,
+      totalMarks: exam.totalMarks,
+      passingScore: exam.passingScore,
+      isPublished: exam.isPublished,
+    });
+  }
+
+  // Cancel edit/add mode
+  cancelForm() {
+    this.viewMode = 'list';
+    this.isEditing = false;
+    this.selectedExamForEdit = null;
+    this.examForm.reset({
+      instructorId: this.instructorId,
+      examId: null,
+      courseId: null,
+      durationMinutes: 60,
+      totalMarks: 100,
+      passingScore: 50,
+      isPublished: false,
+    });
+  }
+
   openManageQuestions(exam: any) {
     console.log('Opening manage questions for exam:', exam);
 
@@ -78,14 +154,10 @@ export class InstructorExamsComponent implements OnInit {
     this.selectedExamForQuestions = exam;
     this.viewMode = 'manage-questions';
 
-    // Reset arrays
     this.courseQuestions = [];
     this.assignedQuestions = [];
 
-    // Load course questions
     this.loadCourseQuestions(exam.courseId);
-
-    // Load already assigned questions
     this.loadAssignedQuestions(exam.examId);
   }
 
@@ -110,6 +182,14 @@ export class InstructorExamsComponent implements OnInit {
     });
   }
 
+  toggleCreateForm(): void {
+    if (this.viewMode === 'list') {
+      this.openAddExam();
+    } else if (this.viewMode === 'add' || this.viewMode === 'edit') {
+      this.cancelForm();
+    }
+  }
+
   loadAssignedQuestions(examId: number) {
     console.log('Loading assigned questions for examId:', examId);
 
@@ -130,6 +210,7 @@ export class InstructorExamsComponent implements OnInit {
       },
     });
   }
+
   assignQuestion(questionId: number) {
     if (!this.selectedExamForQuestions) {
       this.toastService.show('No exam selected', 'error');
@@ -167,11 +248,7 @@ export class InstructorExamsComponent implements OnInit {
     this.examService.addQuestionToExam(payload).subscribe({
       next: (res) => {
         console.log('Question assignment response:', res);
-        this.toastService.show(
-          res.message || 'Question added successfully!',
-          'success',
-        );
-        // Refresh the assigned questions list
+        this.toastService.show('Question added successfully!', 'success');
         this.loadAssignedQuestions(this.selectedExamForQuestions.examId);
       },
       error: (err) => {
@@ -219,13 +296,15 @@ export class InstructorExamsComponent implements OnInit {
       return;
     }
 
-
+    // Implement remove functionality if API exists
+    // this.examService.removeQuestionFromExam(questionId).subscribe(...)
   }
 
   isQuestionAssigned(questionId: number): boolean {
     return this.assignedQuestions.some((q) => q.questionId === questionId);
   }
 
+  // Submit form for both create and update
   submitExam() {
     if (this.examForm.valid) {
       const formData = this.examForm.value;
@@ -243,30 +322,13 @@ export class InstructorExamsComponent implements OnInit {
         courseId: courseId,
       };
 
-      this.examService.createExam(examData).subscribe({
-        next: (res) => {
-          console.log('Exam creation response:', res);
-          this.toastService.show('Exam created successfully!', 'success');
-          this.viewMode = 'list';
-          this.examForm.reset({
-            instructorId: this.instructorId,
-            durationMinutes: 60,
-            totalMarks: 100,
-            passingScore: 50,
-            isPublished: false,
-          });
-          this.loadMyExams();
-        },
-        error: (err) => {
-          console.error('Error creating exam:', err);
-          const errorMsg =
-            err.error?.message ||
-            err.error?.error ||
-            err.message ||
-            'Error creating exam';
-          this.toastService.show(errorMsg, 'error');
-        },
-      });
+      if (this.isEditing && formData.examId) {
+        // Update existing exam
+        this.updateExam(examData);
+      } else {
+        // Create new exam
+        this.createExam(examData);
+      }
     } else {
       console.log('Form invalid:', this.examForm.errors);
       this.toastService.show(
@@ -277,13 +339,80 @@ export class InstructorExamsComponent implements OnInit {
     }
   }
 
+  createExam(examData: any) {
+    this.examService.createExam(examData).subscribe({
+      next: (res) => {
+        console.log('Exam creation response:', res);
+        this.toastService.show('Exam created successfully!', 'success');
+        this.viewMode = 'list';
+        this.isEditing = false;
+        this.selectedExamForEdit = null;
+        this.examForm.reset({
+          instructorId: this.instructorId,
+          examId: null,
+          courseId: null,
+          durationMinutes: 60,
+          totalMarks: 100,
+          passingScore: 50,
+          isPublished: false,
+        });
+        this.loadMyExams();
+      },
+      error: (err) => {
+        console.error('Error creating exam:', err);
+        const errorMsg =
+          err.error?.message ||
+          err.error?.error ||
+          err.message ||
+          'Error creating exam';
+        this.toastService.show(errorMsg, 'error');
+      },
+    });
+  }
+
+  updateExam(examData: any) {
+    this.examService.updateExam(examData).subscribe({
+      next: (res) => {
+        console.log('Exam update response:', res);
+        this.toastService.show('Exam updated successfully!', 'success');
+        this.viewMode = 'list';
+        this.isEditing = false;
+        this.selectedExamForEdit = null;
+        this.examForm.reset({
+          instructorId: this.instructorId,
+          examId: null,
+          courseId: null,
+          durationMinutes: 60,
+          totalMarks: 100,
+          passingScore: 50,
+          isPublished: false,
+        });
+        this.loadMyExams();
+      },
+      error: (err) => {
+        console.error('Error updating exam:', err);
+        const errorMsg =
+          err.error?.message ||
+          err.error?.error ||
+          err.message ||
+          'Error updating exam';
+        this.toastService.show(errorMsg, 'error');
+      },
+    });
+  }
+
   onDelete(examId: number) {
-    if (confirm('Are you sure you want to delete this exam?')) {
-      this.examService.deleteExam(this.instructorId, examId).subscribe({
+    this.openDeleteModal(examId);
+  }
+
+  confirmDelete() {
+    if (this.examtodelete !== null) {
+      this.examService.deleteExam(this.instructorId, this.examtodelete).subscribe({
         next: (res) => {
           console.log('Delete response:', res);
           this.toastService.show('Exam deleted successfully', 'info');
           this.loadMyExams();
+          this.closeDeleteModal();
         },
         error: (err) => {
           console.error('Error deleting exam:', err);
@@ -298,6 +427,17 @@ export class InstructorExamsComponent implements OnInit {
     }
   }
 
+  isDeleteModalOpen = false;
+  examtodelete: number | null = null;
+
+  openDeleteModal(examId: number) {
+    this.examtodelete = examId;
+    this.isDeleteModalOpen = true;
+  }
+  closeDeleteModal() {
+    this.isDeleteModalOpen = false;
+    this.examtodelete = null;
+  }
   // Helper method to mark all form controls as touched
   private markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach((control) => {
@@ -306,5 +446,13 @@ export class InstructorExamsComponent implements OnInit {
         this.markFormGroupTouched(control);
       }
     });
+  }
+
+  // Close manage questions view
+  closeManageQuestions() {
+    this.viewMode = 'list';
+    this.selectedExamForQuestions = null;
+    this.courseQuestions = [];
+    this.assignedQuestions = [];
   }
 }

@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
-import { StudentHomeComponent } from './pages/student/student-home/student-home.component';
+import { StudentHome } from './pages/student/student-home/student-home.component';
 import { InstructorHomeComponent } from './pages/instructor/instructor-home/instructor-home.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { AppShellComponent } from './layouts/app-shell/app-shell.component';
@@ -30,7 +30,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'studentHome',
-        component: StudentHomeComponent,
+        component: StudentHome,
         title: 'Student Home',
       },
       {

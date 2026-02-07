@@ -1,4 +1,4 @@
-<div class="min-h-screen w-full bg-slate-50 flex items-center justify-center px-4 py-10">
+<div class="min-h-screen w-full bg-slate-50 flex items-center  justify-center py-3 px-4 ">
 
   <!-- LOGIN CARD -->
   <div
@@ -15,14 +15,14 @@
     <img
       src="/Sign up.gif"
       alt="Login illustration"
-      class="w-full max-w-[1000px] h-auto object-contain"
+      class="w-full max-w-[800px] h-auto object-contain"
     />
   </div>
 </section>
 
 
     <!-- RIGHT FORM -->
-    <section class="flex w-full lg:w-1/2 items-center justify-center px-6 py-12 bg-white">
+    <section class="flex w-full lg:w-1/2 items-center justify-center px-6 py-3 bg-white">
       <div class="w-full max-w-md">
 
         <!-- LOGO -->
@@ -32,7 +32,7 @@
             alt="ITI Logo"
             class="h-28 w-auto object-contain drop-shadow-sm"
           />
-          <h2 class="mt-4 text-2xl font-bold text-slate-900">
+          <h2 class="mt-2 text-2xl font-bold text-slate-900">
             Create A New Account !
           </h2>
           <p class="mt-2 text-slate-500">
@@ -76,7 +76,7 @@
                 formControlName="fullName"
                 placeholder="Your full name"
                 [class]="
-                  'w-full rounded-xl border bg-white py-3 pl-10 pr-4 text-slate-900 transition focus:outline-none focus:ring-4 ' +
+                  'w-full rounded-xl border bg-white py-2 pl-10 pr-4 text-slate-900 transition focus:outline-none focus:ring-4 ' +
                   (isInvalid('fullName')
                     ? 'border-red-300 focus:ring-red-100'
                     : isValid('fullName')
@@ -120,7 +120,7 @@
                 formControlName="email"
                 placeholder="name@example.com"
                 [class]="
-                  'w-full rounded-xl border bg-white py-3 pl-10 pr-4 text-slate-900 transition focus:outline-none focus:ring-4 ' +
+                  'w-full rounded-xl border bg-white py-2 pl-10 pr-4 text-slate-900 transition focus:outline-none focus:ring-4 ' +
                   (isInvalid('email')
                     ? 'border-red-300 focus:ring-red-100'
                     : isValid('email')
@@ -180,7 +180,7 @@
                 formControlName="passwordHash"
                 placeholder="••••••••"
                 [class]="
-                  'w-full rounded-xl border bg-white py-3 pl-10 pr-12 text-slate-900 transition ' +
+                  'w-full rounded-xl border bg-white py-2 pl-10 pr-12 text-slate-900 transition ' +
                   'focus:outline-none focus:ring-4 ' +
                   (isInvalid('passwordHash')
                     ? 'border-red-300 focus:ring-red-100'
@@ -284,7 +284,7 @@
       formControlName="branchId"
       (change)="onBranchChange()"
       [class]="
-        'w-full rounded-xl border bg-white py-3 px-4 text-slate-900 transition focus:outline-none focus:ring-4 ' +
+        'w-full rounded-xl border bg-white py-2 px-4 text-slate-900 transition focus:outline-none focus:ring-4 ' +
         (isInvalid('branchId')
           ? 'border-red-300 focus:ring-red-100'
           : isValid('branchId')
@@ -313,7 +313,7 @@
     <select
       formControlName="trackId"
       [class]="
-        'w-full rounded-xl border bg-white py-3 px-4 text-slate-900 transition focus:outline-none focus:ring-4 ' +
+        'w-full rounded-xl border bg-white py-2 px-4 text-slate-900 transition focus:outline-none focus:ring-4 ' +
         (isInvalid('trackId')
           ? 'border-red-300 focus:ring-red-100'
           : isValid('trackId')
@@ -340,7 +340,7 @@
           <button
             type="submit"
             [disabled]="isSubmitting"
-            class="mt-2 w-full rounded-xl bg-[#0b2b5b] py-3 font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none focus:ring-4 focus:ring-[#0b2b5b]/20"
+            class="mt-2 w-full rounded-xl bg-[#0b2b5b] py-2 font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none focus:ring-4 focus:ring-[#0b2b5b]/20"
           >
             <span *ngIf="!isSubmitting">Register</span>
             <span *ngIf="isSubmitting">Creating account...</span>

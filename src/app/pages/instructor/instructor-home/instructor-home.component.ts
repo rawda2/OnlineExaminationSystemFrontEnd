@@ -1,11 +1,20 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-instructor-home',
-  imports: [],
   templateUrl: './instructor-home.component.html',
-  styleUrl: './instructor-home.component.css'
+  styleUrls: ['./instructor-home.component.css'],
 })
-export class InstructorHomeComponent {
+export class InstructorHomeComponent implements OnInit {
+  isMenuOpen = false;
+
+  constructor() {}
+
+  ngOnInit(): void {}
+
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+  
 
 }

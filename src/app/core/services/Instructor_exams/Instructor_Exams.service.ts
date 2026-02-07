@@ -36,6 +36,10 @@ export class ExamService {
   }): Observable<any> {
     return this.http.post(`${this.apiUrl}/add-to-exam`, payload);
   }
+  updateExam(examData: any): Observable<any> 
+  {
+      return this.http.put(`${this.apiUrl}/update`, examData);
+  }
   deleteExam(instructorId: number, examId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/delete`, {
       body: { instructorId, examId },
