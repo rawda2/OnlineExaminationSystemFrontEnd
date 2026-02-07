@@ -20,7 +20,7 @@ export class InstructorQuestionsService {
     }
 
     // Add new question
-    c(payload: any): Observable<any> {
+    addQuestion(payload: any): Observable<any> {
         return this.http.post(`${this.apiUrl}Questions/add-with-choices`, payload);
     }
 }

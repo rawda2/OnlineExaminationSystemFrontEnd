@@ -16,7 +16,7 @@
 
         <div class="grid gap-4">
             <div *ngFor="let item of attempts"
-                class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between hover:shadow-md transition-shadow">
+                class="bg-white px-5 py-3 rounded-3xl shadow-sm border border-slate-100 flex items-center justify-between hover:shadow-md transition-shadow">
 
                 <div class="flex items-center gap-5">
                     <div [ngClass]="item.isPassed ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'"

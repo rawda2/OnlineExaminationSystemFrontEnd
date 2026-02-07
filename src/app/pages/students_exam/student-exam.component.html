@@ -1,7 +1,7 @@
 <!-- Main Loading/Error States -->
 <ng-container *ngIf="!isLoading; else loadingTemplate">
   <ng-container *ngIf="exam && !errorMessage; else errorTemplate">
-    <div class="min-h-screen bg-slate-50 font-sans pb-20">
+    <div class="min-h-screen bg-slate-50 font-sans ">
 
       <header class="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
@@ -20,12 +20,23 @@
             </div>
           </div>
 
-          <div class="flex items-center gap-3 bg-red-50 text-red-600 px-4 py-2 rounded-full border border-red-100">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-              stroke="currentColor" class="w-5 h-5 animate-pulse">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span class="font-mono font-bold text-lg">24:59</span>
+          <div class="flex flex-col items-end space-y-2">
+            <div class="flex items-center space-x-4">
+              <!-- Timer Display -->
+              <div class="text-center">
+                <div class="flex items-center space-x-2">
+                  <div class="px-5 py-2 bg-gray-50 rounded-xl border border-gray-200">
+                    <span [class]="'font-mono font-bold text-xl ' + getTimeClass()">
+                      {{ formattedTime }}
+                    </span>
+                  </div>
+                  <button (click)="openSubmitModal()"
+                    class="px-6 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-colors">
+                    Submit Exam
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -35,13 +46,13 @@
         </div>
       </header>
 
-      <main class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <main class="max-w-7xl mx-auto px-4 py-4 grid grid-cols-1 lg:grid-cols-4 gap-8">
 
         <div class="lg:col-span-3">
           <div *ngIf="exam.questions[currentQuestionIndex] as q" class="space-y-6">
 
-            <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm">
-              <div class="flex items-center gap-3 mb-6">
+            <div class="bg-white rounded-3xl px-8 py-6 border border-slate-200 shadow-sm">
+              <div class="flex items-center gap-3">
                 <span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-md text-sm font-bold">
                   Question {{ currentQuestionIndex + 1 }}
                 </span>
@@ -58,7 +69,7 @@
                   [class.ring-2]="selectedAnswers.get(q.questionId) === choice.choiceId"
                   [class.ring-blue-600]="selectedAnswers.get(q.questionId) === choice.choiceId"
                   [class.bg-blue-50]="selectedAnswers.get(q.questionId) === choice.choiceId"
-                  class="relative flex items-center p-5 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition-all group">
+                  class="relative flex items-center px-5 py-3 rounded-2xl border border-slate-200 cursor-pointer hover:border-blue-400 hover:bg-slate-50 transition-all group">
 
                   <input type="radio" [name]="'question-' + q.questionId"
                     [checked]="selectedAnswers.get(q.questionId) === choice.choiceId"
@@ -180,7 +191,7 @@
   <ng-template #errorTemplate>
     <div class="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-4">
       <div class="bg-red-50 border border-red-200 rounded-2xl p-8 max-w-md text-center">
-        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto ">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
