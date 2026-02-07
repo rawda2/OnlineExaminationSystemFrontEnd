@@ -1,3 +1,3 @@
 export const environment = {
-  baseURL: 'https://localhost:7288/api/',
+  baseURL: 'https://onlineexaminationsystem.runasp.net/api/',
 };
