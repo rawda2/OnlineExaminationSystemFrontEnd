@@ -1,4 +1,5 @@
 export interface IExam {
+  isPublished: boolean;
   examId: number;
   title: string;
   durationMinutes: number;

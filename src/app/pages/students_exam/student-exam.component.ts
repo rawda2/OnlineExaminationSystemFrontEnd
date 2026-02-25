@@ -29,7 +29,7 @@ export class StudentExamComponent implements OnInit, OnDestroy {
   errorMessage = '';
 
   // Timer properties
-  remainingTime: number = 0; // in seconds
+  remainingTime: number = 0; 
   formattedTime: string = '00:00';
   timerSubscription: Subscription | null = null;
   totalDuration: number = 0; // in minutes
@@ -107,7 +107,6 @@ export class StudentExamComponent implements OnInit, OnDestroy {
         ? `${minutes} minute${minutes > 1 ? 's' : ''} remaining!`
         : '1 minute remaining!';
 
-    // You can show a toast notification here
     console.warn('Time warning:', message);
 
     // Example using alert (replace with your toast service)

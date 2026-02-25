@@ -23,8 +23,14 @@ export class ExamsListComponent implements OnInit {
   selectedExamId: number | null = null; // Essential for tracking which exam to start
 
   ngOnInit(): void {
-    this.examService.getAllExams().subscribe({
-      next: (data) => (this.exams = data),
+    this.examService.getAvailableExams().subscribe({
+      next: (data) => {
+        this.exams =
+          data.filter(function (exam) {
+            return exam.isPublished === true;
+        });
+        console.log(this.exams);
+      },
       error: (err) => console.error('Error fetching exams', err),
     });
   }
